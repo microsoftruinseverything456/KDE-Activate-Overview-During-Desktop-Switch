@@ -1,5 +1,3 @@
-<img width="426" height="240" alt="untitled" src="https://github.com/user-attachments/assets/2d4060d9-5168-44e9-b620-46205ec0a7ec" />
-
 # Activate Overview During Desktop Switch
 
 A KWin script for KDE Plasma 6. With it, Overview, Grid View and Window View
@@ -34,6 +32,14 @@ Settings › Keyboard › Shortcuts as "Activate Overview During Desktop Switch:
 
 To change a key while the script is on, change its "Activate Overview During
 Desktop Switch: …" action.
+
+If you installed a pre-release build, its actions had different names, and
+the keys it took (e.g. Meta+W) may do nothing after upgrading. This moves them
+to the current actions:
+
+```bash
+bash tools/migrate-shortcuts.sh
+```
 
 ## How it works
 
