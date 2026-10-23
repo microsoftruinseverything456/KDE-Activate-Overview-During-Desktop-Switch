@@ -66,7 +66,7 @@ swipe ends.
 ## Development
 
 ```bash
-bash tools/package.sh      # dist/interruptibleoverview-<version>.kwinscript
+bash tools/package.sh      # dist/overview-during-desktop-switch.kwinscript
 ```
 
 The script is `package/contents/ui/main.qml`. The `.kwinscript` file is what
