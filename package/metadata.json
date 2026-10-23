@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "KWin/Script",
+    "KPlugin": {
+        "Description": "Lets Overview, Grid View and Window View shortcuts work while a virtual desktop slide is still animating",
+        "EnabledByDefault": false,
+        "Icon": "preferences-system-windows-script-test",
+        "Id": "interruptibleoverview",
+        "License": "GPL-2.0-or-later",
+        "Name": "Activate Overview During Desktop Switch",
+        "Version": "1.0.0"
+    },
+    "X-Plasma-API": "declarativescript",
+    "X-Plasma-API-Minimum-Version": "6.8"
+}
