@@ -104,7 +104,7 @@ Item {
     // KGlobalAccel refuses a key that another action holds, so the stock action
     // is cleared first.
     function takeKeys(action) {
-        const own = "Interruptible " + action.name;
+        const own = "Overview During Desktop Switch " + action.name;
         getKeys(action.name, (stockKeys) => getKeys(own, (ownKeys) => {
             if (stockKeys === null || ownKeys === null) {
                 return;
@@ -120,7 +120,7 @@ Item {
     function giveKeysBack(action) {
         const keys = ownedKeys[action.name];
         if (keys && keys.length > 0) {
-            setKeys("Interruptible " + action.name, []);
+            setKeys("Overview During Desktop Switch " + action.name, []);
             setKeys(action.name, keys);
         }
     }
@@ -227,7 +227,7 @@ Item {
         model: root.actions
         delegate: ShortcutHandler {
             required property var modelData
-            name: "Interruptible " + modelData.name
+            name: "Overview During Desktop Switch " + modelData.name
             text: "Activate Overview During Desktop Switch: " + modelData.text
             sequence: ""
             onActivated: root.press(modelData)

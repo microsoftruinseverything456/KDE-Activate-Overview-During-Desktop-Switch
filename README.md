@@ -1,5 +1,3 @@
-<img width="426" height="240" alt="untitled" src="https://github.com/user-attachments/assets/ebf24fc2-8f97-464a-8087-5e48592fed66" />
-
 # Activate Overview During Desktop Switch
 
 A KWin script for KDE Plasma 6. With it, Overview, Grid View and Window View
@@ -68,7 +66,7 @@ swipe ends.
 ## Development
 
 ```bash
-bash tools/package.sh      # dist/overview-during-desktop-switch.kwinscript
+bash tools/package.sh      # dist/overview-during-desktop-switch-<version>.kwinscript
 ```
 
 The script is `package/contents/ui/main.qml`. The `.kwinscript` file is what
