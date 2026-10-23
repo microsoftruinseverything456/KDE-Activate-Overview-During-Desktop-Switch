@@ -10,6 +10,9 @@
 // script owns copies of those shortcuts, and takes over their keys while it is
 // on. Pressed during a slide, a copy unloads Slide (which ends the animation on
 // the target desktop), triggers the real shortcut and loads Slide again.
+// Overview ignores its swipes during a slide too. The script listens for the
+// same swipes, and when one starts during a slide it unloads Slide, so that
+// Overview follows the rest of the swipe. Slide is loaded again once it ends.
 
 import QtQuick
 import QtQml
@@ -29,6 +32,14 @@ Item {
         { name: "ExposeClassCurrentDesktop", effect: "windowview", text: "Toggle Present Windows (Window class on current desktop)" },
     ]
 
+    // The swipes Overview registers.
+    readonly property var gestures: [
+        { device: SwipeGestureHandler.Device.Touchpad, direction: SwipeGestureHandler.Direction.Up, fingers: 4 },
+        { device: SwipeGestureHandler.Device.Touchpad, direction: SwipeGestureHandler.Direction.Down, fingers: 4 },
+        { device: SwipeGestureHandler.Device.Touchscreen, direction: SwipeGestureHandler.Direction.Up, fingers: 3 },
+        { device: SwipeGestureHandler.Device.Touchscreen, direction: SwipeGestureHandler.Direction.Down, fingers: 3 },
+    ]
+
     readonly property var kwin: ({ service: "org.kde.KWin", path: "/KWin", dbusInterface: "org.kde.KWin" })
     readonly property var effects: ({ service: "org.kde.KWin", path: "/Effects", dbusInterface: "org.kde.kwin.Effects" })
     readonly property var shortcuts: ({ service: "org.kde.kglobalaccel", path: "/component/kwin", dbusInterface: "org.kde.kglobalaccel.Component" })
@@ -37,6 +48,9 @@ Item {
     // The press being handled, and the latest one that arrived meanwhile.
     property var pending: null
     property var queued: null
+    // Swipe handlers following a swipe, and whether Slide was unloaded for it.
+    property int swipes: 0
+    property bool slideUnloaded: false
     // Keys each copy holds, by stock action name, to hand back when unloaded.
     property var ownedKeys: ({})
     property bool quitting: false
@@ -177,6 +191,38 @@ Item {
         }
     }
 
+    // While Slide holds the full screen slot, Overview drops a swipe's progress
+    // instead of opening, so the slot is freed as soon as a swipe starts.
+    function swipeStarted() {
+        swipes++;
+        if (swipes > 1) {
+            return;
+        }
+        readActiveEffects((active) => {
+            if (swipes === 0 || slideUnloaded || !active || !active.includes("slide")) {
+                return;
+            }
+            slideUnloaded = true;
+            call(effects, "unloadEffect", ["slide"], () => {
+                if (swipes === 0) {
+                    reloadSlide();
+                }
+            });
+        });
+    }
+
+    function swipeEnded() {
+        swipes = Math.max(0, swipes - 1);
+        if (swipes === 0 && slideUnloaded) {
+            reloadSlide();
+        }
+    }
+
+    function reloadSlide() {
+        slideUnloaded = false;
+        call(effects, "loadEffect", ["slide"]);
+    }
+
     Instantiator {
         model: root.actions
         delegate: ShortcutHandler {
@@ -185,6 +231,33 @@ Item {
             text: "Activate Overview During Desktop Switch: " + modelData.text
             sequence: ""
             onActivated: root.press(modelData)
+        }
+    }
+
+    Instantiator {
+        model: root.gestures
+        delegate: SwipeGestureHandler {
+            required property var modelData
+            deviceType: modelData.device
+            direction: modelData.direction
+            fingerCount: modelData.fingers
+            // progress isn't reset when a swipe ends, so the first change of
+            // each swipe marks its start.
+            property bool following: false
+            onProgressChanged: {
+                if (!following) {
+                    following = true;
+                    root.swipeStarted();
+                }
+            }
+            onActivated: end()
+            onCancelled: end()
+            function end() {
+                if (following) {
+                    following = false;
+                    root.swipeEnded();
+                }
+            }
         }
     }
 

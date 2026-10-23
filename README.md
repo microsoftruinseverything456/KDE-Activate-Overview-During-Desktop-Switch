@@ -1,5 +1,3 @@
-<img width="426" height="240" alt="untitled" src="https://github.com/user-attachments/assets/afb8e067-26e7-4abd-80a6-6382e7dd744b" />
-
 # Activate Overview During Desktop Switch
 
 A KWin script for KDE Plasma 6. With it, Overview, Grid View and Window View
@@ -47,10 +45,16 @@ A press that KWin ignores still flips the view's on/off state, so in stock
 Plasma the next press seems to be ignored too. The script checks that the view
 really opened and presses again if it didn't.
 
+Overview's swipes can't be taken over the way keys can, so the script listens
+for the same swipes. When one starts during a slide, it unloads Slide, so
+Overview follows the rest of the swipe as usual, and loads Slide again when the
+swipe ends.
+
 ## Limitations
 
-- Only keyboard shortcuts are covered. Screen edges, hot corners and touchpad
-  gestures behave as before.
+- Keyboard shortcuts and Overview's swipes (four fingers up or down on a
+  touchpad, three on a touchscreen) are covered. Screen edges and hot corners
+  behave as before.
 - Only the Slide effect is handled, not other desktop switch animations.
 - The script finds out which effects are running from KWin's support
   information text. If a future KWin changes that text, presses behave as in
