@@ -32,13 +32,19 @@ Item {
         { name: "ExposeClassCurrentDesktop", effect: "windowview", text: "Toggle Present Windows (Window class on current desktop)" },
     ]
 
-    // The swipes Overview registers.
+    // The swipes Overview registers, and those of the Three Finger Overview
+    // effect, which is a copy of Overview that needs the full screen slot too.
+    // That effect only adds its swipes with one row of desktops, since KWin
+    // switches rows with them otherwise, and they only count while it's loaded.
     readonly property var gestures: [
         { device: SwipeGestureHandler.Device.Touchpad, direction: SwipeGestureHandler.Direction.Up, fingers: 4 },
         { device: SwipeGestureHandler.Device.Touchpad, direction: SwipeGestureHandler.Direction.Down, fingers: 4 },
         { device: SwipeGestureHandler.Device.Touchscreen, direction: SwipeGestureHandler.Direction.Up, fingers: 3 },
         { device: SwipeGestureHandler.Device.Touchscreen, direction: SwipeGestureHandler.Direction.Down, fingers: 3 },
-    ]
+    ].concat(Workspace.desktopGridHeight !== 1 ? [] : [
+        { device: SwipeGestureHandler.Device.Touchpad, direction: SwipeGestureHandler.Direction.Up, fingers: 3, effect: "threefingeroverview" },
+        { device: SwipeGestureHandler.Device.Touchpad, direction: SwipeGestureHandler.Direction.Down, fingers: 3, effect: "threefingeroverview" },
+    ])
 
     readonly property var kwin: ({ service: "org.kde.KWin", path: "/KWin", dbusInterface: "org.kde.KWin" })
     readonly property var effects: ({ service: "org.kde.KWin", path: "/Effects", dbusInterface: "org.kde.kwin.Effects" })
@@ -192,12 +198,25 @@ Item {
     }
 
     // While Slide holds the full screen slot, Overview drops a swipe's progress
-    // instead of opening, so the slot is freed as soon as a swipe starts.
-    function swipeStarted() {
+    // instead of opening, so the slot is freed as soon as a swipe starts. A swipe
+    // that belongs to another effect only frees it while that effect is loaded.
+    function swipeStarted(effect) {
         swipes++;
         if (swipes > 1) {
             return;
         }
+        if (effect) {
+            call(effects, "isEffectLoaded", [effect], (loaded) => {
+                if (loaded) {
+                    freeSlotForSwipe();
+                }
+            });
+        } else {
+            freeSlotForSwipe();
+        }
+    }
+
+    function freeSlotForSwipe() {
         readActiveEffects((active) => {
             if (swipes === 0 || slideUnloaded || !active || !active.includes("slide")) {
                 return;
@@ -247,11 +266,13 @@ Item {
             onProgressChanged: {
                 if (!following) {
                     following = true;
-                    root.swipeStarted();
+                    root.swipeStarted(modelData.effect);
                 }
             }
             onActivated: end()
             onCancelled: end()
+            // The three finger swipes go away when a second row of desktops is added.
+            Component.onDestruction: end()
             function end() {
                 if (following) {
                     following = false;

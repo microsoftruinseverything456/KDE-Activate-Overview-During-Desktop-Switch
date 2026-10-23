@@ -1,5 +1,3 @@
-<img width="426" height="240" alt="682226086-2d4060d9-5168-44e9-b620-46205ec0a7ec" src="https://github.com/user-attachments/assets/ae57ff98-426d-4def-aba8-f77ee942f79f" />
-
 # Activate Overview During Desktop Switch
 
 A KWin script for KDE Plasma 6. With it, Overview, Grid View and Window View
@@ -60,11 +58,16 @@ for the same swipes. When one starts during a slide, it unloads Slide, so
 Overview follows the rest of the swipe as usual, and loads Slide again when the
 swipe ends.
 
+The same goes for the three finger swipes of the Three Finger Overview effect,
+while it's installed and turned on, so its copy of Overview also opens during
+a slide.
+
 ## Limitations
 
 - Keyboard shortcuts and Overview's swipes (four fingers up or down on a
-  touchpad, three on a touchscreen) are covered. Screen edges and hot corners
-  behave as before.
+  touchpad, three on a touchscreen) are covered, and so are the Three Finger
+  Overview effect's touchpad swipes. Screen edges and hot corners behave as
+  before.
 - Only the Slide effect is handled, not other desktop switch animations.
 - The script finds out which effects are running from KWin's support
   information text. If a future KWin changes that text, presses behave as in

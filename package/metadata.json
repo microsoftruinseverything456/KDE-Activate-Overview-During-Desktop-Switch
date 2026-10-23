@@ -7,7 +7,7 @@
         "Id": "overview-during-desktop-switch",
         "License": "GPL-2.0-or-later",
         "Name": "Activate Overview During Desktop Switch",
-        "Version": "1.0.2"
+        "Version": "1.0.4"
     },
     "X-Plasma-API": "declarativescript",
     "X-Plasma-API-Minimum-Version": "6.8"
