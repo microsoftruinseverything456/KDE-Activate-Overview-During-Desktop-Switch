@@ -1,3 +1,5 @@
+<img width="426" height="240" alt="682226086-2d4060d9-5168-44e9-b620-46205ec0a7ec" src="https://github.com/user-attachments/assets/ae57ff98-426d-4def-aba8-f77ee942f79f" />
+
 # Activate Overview During Desktop Switch
 
 A KWin script for KDE Plasma 6. With it, Overview, Grid View and Window View
